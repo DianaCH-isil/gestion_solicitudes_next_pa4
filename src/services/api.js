@@ -32,29 +32,22 @@ function registerLog(entry) {
   if (requestLog.length > MAX_LOG_ENTRIES) requestLog.shift();
 }
 
+// Guardar el token mientras la aplicación esté abierta.
+let tokenEnMemoria = null;
+
 export function getToken() {
   if (typeof window === 'undefined') return null;
-  try {
-    return window.localStorage.getItem(TOKEN_STORAGE_KEY);
-  } catch {
-    return null;
-  }
+  return tokenEnMemoria;
 }
 
 export function setToken(token) {
   if (typeof window === 'undefined' || !token) return;
-  try {
-    window.localStorage.setItem(TOKEN_STORAGE_KEY, token);
-  } catch {
-  }
+  tokenEnMemoria = token;
 }
 
 export function clearToken() {
   if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.removeItem(TOKEN_STORAGE_KEY);
-  } catch {
-  }
+  tokenEnMemoria = null;
 }
 
 export function hasToken() {
