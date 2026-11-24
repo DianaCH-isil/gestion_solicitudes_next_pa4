@@ -4,7 +4,7 @@
 **Asignatura:** Programación Web II (Código 30690 · Período Académico 202620)  
 **Evaluación:** PA4 - Proceso de Aprendizaje 4 (Sesiones 11 a 13 · Sesión de corte: Sesión 13 · Ponderación: 15%)  
 **Repositorio GitHub:** https://github.com/DianaCH-isil/gestion_solicitudes_next_pa4  
-**Despliegue en Vercel:** [PEGAR AQUÍ EL ENLACE DE VERCEL]  
+**Despliegue en Vercel:** (https://gestionsolicitudesnextpa4.vercel.app) 
 **Video público de YouTube:** [PEGAR AQUÍ EL ENLACE]
 
 ---
