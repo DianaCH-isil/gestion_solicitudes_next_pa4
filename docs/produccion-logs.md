@@ -22,3 +22,61 @@ Este documento es la evidencia técnica del alcance del **Integrante 4** dentro 
 ---
 
 ## 2. Decisiones Técnicas (Optimización, Webpack y Compilación)
+
+1. **Minificación y limpieza de código (`next.config.mjs`):**
+   * Se habilitó `compiler.removeConsole` en entornos de producción conservando únicamente `console.error` y `console.warn` para evitar fuga de información de depuración en el navegador del cliente.
+   * Se desactivó `poweredByHeader: false` para ocultar la cabecera `X-Powered-By: Next.js` y reducir la superficie de exposición del servidor.
+   * Se activó `compress: true` para entregar los recursos estáticos comprimidos mediante Gzip/Brotli.
+
+2. **Optimización de empaquetado con Webpack (`splitChunks`):**
+   * Se configuró la estrategia `optimization.splitChunks` en `next.config.mjs` para separar las dependencias externas de `node_modules` en un chunk independiente (`vendors`), mejorando el almacenamiento en caché del navegador y reduciendo el peso de descarga inicial por ruta.
+
+3. **Optimización de recursos y cabeceras HTTP de seguridad:**
+   * Se configuró soporte nativo para formatos modernos de imagen (`image/avif` y `image/webp`).
+   * Se añadieron cabeceras de seguridad estándar (`X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY` y `Referrer-Policy: strict-origin-when-cross-origin`) aplicables a todas las rutas (`/:path*`).
+
+---
+
+## 3. Gestión de Variables de Entorno
+
+Se estandarizó el archivo `.env.example` en la raíz del proyecto y se replicaron las claves en el entorno **Production** del panel de Vercel (`Settings -> Environments -> Production`)[cite: 10, 11]:
+
+| Variable | Valor en Producción | Propósito |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:3000` | URL base del backend REST / modo simulación sin servidor externo. |
+| `NEXT_PUBLIC_APP_ENV` | `production` | Identificador del entorno activo de ejecución. |
+| `NEXT_PUBLIC_ENABLE_MONITORING` | `true` | Habilita el registro estructurado de eventos y telemetría. |
+| `NEXT_PUBLIC_DEMO_CORREO` | `admin@isil.pe` | Credencial de demostración para acceso rápido al módulo de solicitudes. |
+| `NEXT_PUBLIC_DEMO_PASSWORD` | `123` | Contraseña de demostración para pruebas funcionales en producción. |
+
+---
+
+## 4. Logs, Manejo de Errores y Monitoreo
+
+* **Logger estructurado (`src/utils/logger.js`):** Centraliza las trazas de aplicación con marca de tiempo ISO, nivel de severidad (`info`, `warn`, `error`) y contexto operativo, integrándose con la bitácora de peticiones HTTP (`getRequestLog()`) definida en `src/services/api.js`.
+* **Control de fallos en tiempo de ejecución (`src/app/error.jsx`):** Captura excepciones no controladas dentro del árbol de componentes de Next.js App Router, registra el detalle técnico mediante el logger y ofrece al usuario una interfaz limpia de recuperación (`reset()`).
+* **Rutas inexistentes (`src/app/not-found.jsx`):** Intercepta accesos a URLs no registradas (HTTP 404) mostrando una vista coherente con la identidad visual de la plataforma y navegación de retorno segura.
+* **Telemetría en vivo (`@vercel/analytics`):** Incorporado en `src/app/layout.jsx` junto con el panel nativo de **Observability** de Vercel para auditar invocaciones de funciones, solicitudes CDN y rendimiento real de páginas[cite: 8].
+
+---
+
+## 5. Despliegue en Producción (Vercel) y Evidencias
+
+### 5.1 Parámetros de despliegue
+* **Plataforma:** Vercel (Plan Hobby)[cite: 4, 6]
+* **Repositorio origen:** `DianaCH-isil/gestion_solicitudes_next_pa4` (rama `main`)[cite: 6]
+* **Framework Preset:** Next.js
+* **Comando de compilación:** `npm run build`
+
+### 5.2 Enlace público activo
+* **URL de Producción:** https://gestionsolicitudesnextpa4.vercel.app[cite: 8]
+* **Estado del despliegue:** `Ready` (Verificado en producción con CDN y funciones activas)[cite: 8]
+
+### 5.3 Capturas de evidencia (`evidencias/integrante-4/`)
+
+| Captura | Contenido |
+|---|---|
+| `evidencias/integrante-4/01-build-produccion.png` | Salida de consola de `npm run build` mostrando la compilación exitosa, minificación y pesos de *chunks*. |
+| `evidencias/integrante-4/02-next-config.png` | Configuración implementada en `next.config.mjs` y `src/utils/logger.js`. |
+| `evidencias/integrante-4/03-despliegue-vercel.png` | Panel de Vercel en estado *Ready* con el dominio público `gestionsolicitudesnextpa4.vercel.app` activo[cite: 8]. |
+| `evidencias/integrante-4/04-logs-monitoreo.png` | Variables de entorno configuradas en Vercel y monitoreo activo de rutas y manejo de errores. |
