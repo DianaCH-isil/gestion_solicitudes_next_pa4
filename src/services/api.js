@@ -63,6 +63,7 @@ export async function apiRequest(endpoint, options = {}) {
     headers = {},
     baseUrl = API_BASE_URL,
     validate,
+    token,
   } = options;
 
   const url = `${baseUrl}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
@@ -77,8 +78,8 @@ export async function apiRequest(endpoint, options = {}) {
   }
 
   if (auth) {
-    const token = getToken();
-    if (token) requestHeaders.Authorization = `Bearer ${token}`;
+    const tokenSesion = token || getToken();
+    if (tokenSesion) requestHeaders.Authorization = `Bearer ${tokenSesion}`;
   }
 
   const controller = new AbortController();
@@ -232,8 +233,9 @@ export function getPerfil() {
   });
 }
 
-export function listarSolicitudes(filtros = {}) {
+export function listarSolicitudes(filtros = {}, opciones = {}) {
   return apiRequest(`/api/solicitudes${buildQuery(filtros)}`, {
+    ...opciones,
     validate: (data) => assertArray(data, 'solicitudes'),
   });
 }
@@ -290,6 +292,22 @@ export function listarSolicitudesSinToken() {
   });
 }
 
+export async function obtenerPrimeraSolicitud() {
+  let solicitudes;
+
+  try {
+    solicitudes = await listarSolicitudesSinToken();
+  } catch (error) {
+    if (error?.status !== 401) throw error;
+    const correo = process.env.NEXT_PUBLIC_DEMO_CORREO || 'admin@isil.pe';
+    const password = process.env.NEXT_PUBLIC_DEMO_PASSWORD || '123';
+    const { token } = await login(correo, password);
+    solicitudes = await listarSolicitudes({}, { token });
+  }
+
+  return solicitudes[0] || null;
+}
+
 export function simularErrorServidor() {
   const apiError = new ApiError(
     'Error interno del servidor (500) - inyección de fallo controlada para verificación.',
@@ -333,6 +351,7 @@ export const api = {
   listarUsuarios,
   listarEstudiantes,
   listarSolicitudesSinToken,
+  obtenerPrimeraSolicitud,
   simularErrorServidor,
 };
 

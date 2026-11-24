@@ -1,7 +1,20 @@
 import Link from "next/link";
 import Navbar from "@/src/components/Navbar";
+import { obtenerPrimeraSolicitud } from "@/src/services/api";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  let solicitud = null;
+
+  try {
+    solicitud = await obtenerPrimeraSolicitud();
+  } catch {
+    solicitud = null;
+  }
+
+  const idSolicitud = solicitud?._id || solicitud?.id || solicitud?.codigoRadicado || null;
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <Navbar />
@@ -57,12 +70,21 @@ export default function Home() {
               </Link>
             </li>
             <li>
-              <Link
-                href="/solicitudes/1"
-                className="underline underline-offset-4 hover:text-slate-900"
-              >
-                Detalle dinámico de solicitud (/solicitudes/[id])
-              </Link>
+              {idSolicitud ? (
+                <Link
+                  href={`/solicitudes/${idSolicitud}`}
+                  className="underline underline-offset-4 hover:text-slate-900"
+                >
+                  Detalle dinámico de solicitud (/solicitudes/[id])
+                </Link>
+              ) : (
+                <span
+                  aria-disabled="true"
+                  className="cursor-not-allowed text-slate-400 underline underline-offset-4"
+                >
+                  Detalle dinámico de solicitud (/solicitudes/[id]) (Aún no hay datos)
+                </span>
+              )}
             </li>
           </ul>
         </section>
