@@ -34,7 +34,7 @@ export default function Navbar() {
             href="/"
             className="text-base font-bold tracking-tight text-slate-900"
           >
-            Gestión de Solicitudes · PA4
+            Gestión de Solicitudes 
           </Link>
 
           <ul className="flex flex-wrap items-center gap-4 text-sm">
