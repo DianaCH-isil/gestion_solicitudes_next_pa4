@@ -1,5 +1,6 @@
 
 import SolicitudesClient from "./SolicitudesClient";
+import ProtectedRoute from "@/src/components/ProtectedRoute";
 import { listarSolicitudesSinToken } from "@/src/services/api";
 
 export const dynamic = "force-dynamic";
@@ -14,10 +15,13 @@ export default async function SolicitudesPage() {
     errorInicial = error.message || "No fue posible cargar las solicitudes.";
   }
 
+  // Vista privada: solo se muestra si hay una sesión activa.
   return (
-    <SolicitudesClient
-      solicitudesIniciales={solicitudes}
-      errorInicial={errorInicial}
-    />
+    <ProtectedRoute>
+      <SolicitudesClient
+        solicitudesIniciales={solicitudes}
+        errorInicial={errorInicial}
+      />
+    </ProtectedRoute>
   );
 }
