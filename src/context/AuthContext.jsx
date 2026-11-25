@@ -22,7 +22,7 @@ export function useAuth() {
 
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
-  const [token, setToken] = useState(""); // En memoria; no localStorage.
+  const [token, setToken] = useState(""); 
   const [cargando, setCargando] = useState(true);
   const router = useRouter();
 
